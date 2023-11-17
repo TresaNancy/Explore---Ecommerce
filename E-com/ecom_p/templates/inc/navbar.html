@@ -1,0 +1,89 @@
+{% load static %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+<style>
+	.form-controls {
+		margin-left: 19px;
+		height: 47px ;
+		width: 240px;
+		background: #fff ;
+		color: #050310 ;
+		font-size: 18px;
+		border-radius: 0px;
+		-webkit-box-shadow: none ;
+		box-shadow: none ; }
+		 .form-controls:focus, .form-controls:active {
+		  border-color: #000000;  
+		 }
+
+		 .form-controls::placeholder {
+			font-size: 14px; /* Adjust the font size as needed */
+			text-align: center;
+		  }
+</style>
+  <body class="goto-here">
+		<div class="py-1 bg-blue">
+    	<div class="container">
+    		<div class="row no-gutters d-flex align-items-start align-items-center px-md-0">
+	    		<div class="col-lg-12 d-block">
+		    		<div class="row d-flex">
+		    			<div class="col-md pr-4 d-flex topper align-items-center">
+					    	<div class="icon mr-2 d-flex justify-content-center align-items-center"><span class="fa fa-phone2"></span></div>
+						    <span class="text">+ 1235 2355 98</span>
+					    </div>
+					    <div class="col-md pr-4 d-flex topper align-items-center">
+					    	<div class="icon mr-2 d-flex justify-content-center align-items-center"><span class="fa fa-paper-plane"></span></div>
+						    <span class="text">{{request.user.email}}</span>
+					    </div>
+					    <div class="col-md-5 pr-4 d-flex topper align-items-center text-lg-right">
+						    <span class="text">3-5 Business days delivery &amp; Free Returns</span>
+					    </div>
+				    </div>
+			    </div>
+		    </div>
+		  </div>
+    </div>
+    <nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
+	    <div class="container">
+	      <a class="navbar-brand" href="index.html">Explore</a>
+	      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
+	        <span class="oi oi-menu"></span> Menu
+	      </button>
+
+	      <div class="collapse navbar-collapse" id="ftco-nav">
+	        <ul class="navbar-nav ml-auto">
+
+	          <li class="nav-item"><a href={% url 'home' %} class="nav-link">Home</a></li>
+			  <li class="nav-item"><a href={% url 'store' %} class="nav-link">Store</a></li>
+
+	          
+	 
+			  {% if request.user.is_authenticated %}
+			  <li class="nav-item"><a href={% url 'handlelogout' %} class="nav-link">Logout</a></li>
+			  {% else %}
+			  <li class="nav-item"><a href={% url 'handlelogin' %} class="nav-link">Login</a></li>
+			  {% endif %}
+
+	          {% comment %} <li class="nav-item cta cta-colored"><a href="{% url 'cart' %}" class="nav-link"><span class="icon-shopping_cart"></span>[{{cart_count}}]</a></li> {% endcomment %}
+			  <li class="nav-item cta cta-colored"><a href="{% url 'cart' %}" class="nav-link"><span class="fa fa-shopping-cart"></span>[{{ cart_count }}]</a></li>
+			  <li class="nav-item cta cta-colored"><a href="{% url 'wishlist' %}" class="nav-link"><span class="fa fa-heart color-danger" aria-hidden="true"></span>[{{ wishlist_count }}]</a></li>
+			  <li class="nav-item cta cta-colored"><a href="{% url 'user_profile' %}" class="nav-link"><span class="fa fa-user color-danger" aria-hidden="true"></span></a></li>
+			  
+			  <li>
+				<form action="{% url 'search' %}" method="POST"> {% csrf_token %} <!-- Set the action attribute to your search results URL -->
+				  <div class="input-group mb-3">
+					<input type="text" class="form-controls" name="keyword" placeholder="TYPE A KEY WORK AND HIT ENTER" aria-label="Search" aria-describedby="search-button" >
+	
+					</div>
+				  </div>
+				</form>
+			  </li>
+			  
+
+	        </ul>
+	      </div>
+	    </div>
+	  </nav>
+    <script>
+		
+	</script>

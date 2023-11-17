@@ -1,0 +1,157 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10.15.5/dist/sweetalert2.min.css">
+  <link rel="stylesheet" href="{% static 'css/login.css' %}">
+
+  	<!-- aleartyfy js-->
+	<!-- CSS -->
+	<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/alertify.min.css"/>
+	<!-- Default theme -->
+	<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/themes/default.min.css"/>
+
+  <style>
+    body {
+      background-color: #f8f9fa; /* Add a background color */
+      display: flex;
+      justify-content: center; /* Center horizontally */
+      align-items: center; /* Center vertically */
+      height: 100vh; /* Full viewport height */
+    }
+    .container {
+      max-width: 400px; /* Adjust container width */
+      padding: 20px;
+      background-color: #fff; /* Add a white background */
+      border-radius: 8px; /* Add rounded corners */
+      box-shadow: 0 0 10px rgba(0,0,0,0.2); /* Add a subtle shadow */
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .btn-primary {
+      background-color: #007bff; /* Change button color */
+    }
+    .btn-primary:hover {
+      background-color: #0056b3; /* Change button color on hover */
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2 class="text-center">Admin Login</h2>
+    <form method="post" action="{% url 'admin_login' %}" onsubmit="return validateForm();">
+      {% csrf_token %}
+      <div class="form-group">
+        <label for="email">Email</label>
+        <div class="input-group">
+          <div class="input-group-prepend">
+            <span class="input-group-text">
+              <i class="fas fa-envelope"></i> <!-- Add an email icon -->
+            </span>
+          </div>
+          <input type="text" id="email" name="email" class="form-control" placeholder="Enter your email" required>
+        </div>
+        <p id="email_error" style="display: none;"></p>
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <div class="input-group">
+          <div class="input-group-prepend">
+            <span class="input-group-text">
+              <i class="fas fa-lock"></i> <!-- Add a lock icon -->
+            </span>
+          </div>
+          <input type="password" id="password" name="pass1" class="form-control" placeholder="Enter your password" required>
+        </div>
+        <p id="password_error" style="display: none;"></p>
+      </div>
+      <div class="form-group text-center">
+        <button type="submit" class="btn btn-primary">Login</button>
+      </div>
+    </form>
+  </div>
+
+
+
+
+    <!-- aleartyfy js -->
+    <script src="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
+    <script>
+      alertify.set('notifier','position', 'top-right');
+
+      {% for msg in messages %}
+          alertify.success('{{ msg }}');
+      {% endfor %}
+    </script>
+
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.15.5/dist/sweetalert2.all.min.js"></script>
+
+
+  <script>
+  const errorMessages = 
+    Array.from(document.querySelectorAll('.message-warning .message-error'))
+    .map(el => el.dataset.message);
+  
+  const successMessageEl = document.querySelector('.message-success');
+  const successMessage = successMessageEl?.dataset?.message;
+
+  const isSuccess = !!successMessageEl;
+
+    document.addEventListener("DOMContentLoaded", function() {
+        var alerts = document.querySelectorAll(".hidden-alert");
+        alerts.forEach(function(alert) {
+            var tags = alert.dataset.tags;
+            var message = alert.dataset.message;
+            var buttonUrl = alert.dataset.buttonUrl; // Add this line to retrieve the button URL
+
+            Swal.fire({
+                icon: tags,
+                title: message,
+                showConfirmButton: isSuccess,
+                
+                timer: 3000,
+                confirmButtonText: 'LOGIN',
+            }).then((result) => {
+              if (result.isConfirmed) {
+                window.location.href = "{%url 'handlelogin'%}"
+              }
+            });
+        });
+    });
+
+// form validation
+    function validateForm() {
+      var email = document.getElementById("email").value;
+      var password = document.getElementById("password").value;
+   
+      var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!email.match(emailRegex)) {
+        showError("email_error", "Please enter a valid email address");
+        return false;
+      }
+
+      var passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,}$/;
+      if (!password.match(passwordRegex)) {
+        showError("password_error", "Password must be at least 6 characters and include numbers, uppercase letters, lowercase letters, and special characters.");
+        return false;
+      }
+    }
+
+    function showError(elementId, errorMessage) {
+      var errorElement = document.getElementById(elementId);
+      errorElement.innerHTML = errorMessage;
+      errorElement.style.display = "block";
+
+      setTimeout(function () {
+        errorElement.innerHTML = "";
+        errorElement.style.display = "none";
+      }, 3000); // Display the error message for 3 seconds
+    }
+  </script>
+</body>
+</html>

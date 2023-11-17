@@ -1,0 +1,177 @@
+{% extends 'layouts/main.html' %}
+{% load static %}
+{% block head %}
+	<!-- aleartyfy js-->
+	<!-- CSS -->
+	<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/alertify.min.css"/>
+	<!-- Default theme -->
+	<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/themes/default.min.css"/>
+{% endblock head %}
+{% block body %} 
+
+ <style>
+
+    .billing-form .form-control {
+        border-color: rgba(24, 26, 27, 0.1) !important;
+        background-color: transparent !important;
+        background-image: none !important;
+        color: rgb(0, 2, 2) !important;
+        box-shadow: none !important;
+    }
+</style>
+
+<section class="ftco-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-xl-10 ftco-animate">
+            </div>
+            <div class="col-md-2">
+                <a href="{% url 'change_address' %}" class="btn btn-primary" method="POST">Change</a>
+                {% csrf_token %}
+            </div>
+                <form action="{% url 'order_payment' coupon_id %}" class="billing-form" method="post">
+                    {% csrf_token %}
+                  
+                    <h3 class="mb-4 billing-heading">Billing Details</h3>
+                    <div class="row align-items-end">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="form-group">Full Name</label>
+                                <input  type="text" class="form-control text-success" name="full_name" value="{{ address.full_name }}"  readonly readonly >
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+							<div class="form-group">
+								<label for="country">Phone number</label>
+								<input type="text" class="form-control" name="phone" value="{{ address.phone }}" readonly>
+							</div>
+						</div>
+                        <div class="col-md-6">
+							<div class="form-group">
+								<label for="email">Email</label>
+								<input type="email" class="form-control" name="email" value="{{ address.email }}" readonly>
+							</div>
+						</div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="Pincode">Pincode</label>
+                                <input type="text" class="form-control" name="pincode" value="{{ address.pincode }}" readonly>
+                            </div>
+                        </div>
+
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="address">Address</label>
+                                <input type="text" class="form-control" name="address_line_1" value="{{ address.address_line_1 }}" readonly>
+                            </div>
+                        </div>
+
+                
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="state">State</label>
+                                <input type="text" class="form-control" name="state" value="{{ address.state }}" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="city">City</label>
+                                <input type="text" class="form-control" name="city" value="{{ address.city }}" readonly>
+                            </div>
+                        </div>
+    
+                        <div class="col-md-6">
+                            <div class="cart-detail bg-light p-3 p-md-4">
+                                <h3 class="billing-heading mb-4">Payment Method</h3>
+                                <div class="form-group">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="payment" value="razorpay" id="razorpay" required>
+                                        <label class="form-check-label" for="upiPayments">
+                                            Razorpay(RPZ)
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="payment" value="cod" id="cashondelivery" required>
+                                        <label class="form-check-label" for="cashOnDelivery">
+                                            Cash on Delivery (COD)
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="payment" value="wallet" id="cashondelivery" required>
+                                        <label class="form-check-label" for="cashOnDelivery">
+                                            Wallet
+                                        </label>
+                                    </div>
+                                </div>
+                                <!-- Order Summary details here -->
+                                <p>Total: ₹ {{ total }}</p>
+                                <p>Tax: ₹ {{ tax }}</p>
+                                <p>Coupon Discount: ₹ {{ coupon_amount }}</p>
+                                <p>Grand Total: ₹ {{ grand_total }}</p>
+                                <input type="submit" value="Place order" class="btn btn-primary py-3 px-4" style="padding-left: 20px; padding-right: 20px;">
+                            </div>
+                        </div>
+                    
+                </form>
+                                            
+                <div class="col-md-6">
+                    <div class="cart-detail bg-light p-3 p-md-4">
+                        <h3 class="billing-heading mb-4">Apply Coupon Code</h3>
+                        
+                        <form action="{% url 'checkout' %}" method="POST">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label for="couponCode">Coupon Code:</label>
+                                <select class="form-control" id="couponCode" name="CouponCode">
+                                    {% if coupons|length == 0 %}
+                                    <option value="">No coupons are available for this price range.</option>
+                                    
+                                    {% else %}
+                                    <option value="">Select a coupon</option>
+                                    {% for coupon in coupons %}
+                                    <option value="{{ coupon.code }}">
+                                        {{ coupon.code }}
+                                        
+                                    </option>
+                                    {% endfor %}
+                                    {% endif %}
+                                </select>
+                            </div>
+                            {% if coupons|length == 0 %}
+                            
+                            {% else %}
+                            <button type="submit" class="btn btn-primary py-3 px-4 mt-3">
+                                Apply Coupon
+                            </button>
+                            {% endif %}
+                            
+                        </form>
+                    </div>
+                </div>
+                
+                
+                
+            </div>
+
+            </div> <!-- .col-md-8 -->
+        </div>
+    </div>
+</section> <!-- .section -->
+
+
+
+<script src="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
+      <!-- aleartyfy js -->
+      <script>
+        alertify.set('notifier','position', 'top-right');
+  
+        {% for msg in messages %}
+            alertify.success('{{ msg }}');
+        {% endfor %}
+      </script>
+
+    
+
+{% endblock body %}

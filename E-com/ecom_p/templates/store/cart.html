@@ -1,0 +1,248 @@
+{% extends 'layouts/main.html' %}
+{% load static %}
+{% block head %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+<script>
+	function validateQuantity(input) {
+		console.log("validateQuantity.............",input)
+		var value = parseInt(input.value);
+		if (isNaN(value) || value < 0) {
+			input.value = 1; // Set to the minimum value
+		}
+	}
+</script>
+{% endblock head %}
+{% block body %} 
+    
+
+
+<div class="hero-wrap hero-bread" style="background-image: url('{% static 'images/bg_6.jpg' %}');">
+	<div class="container">
+	  <div class="row no-gutters slider-text align-items-center justify-content-center">
+		<div class="col-md-9 ftco-animate text-center">
+			<p class="breadcrumbs"><span class="mr-2"><a href="index.html">Home</a></span> <span>Cart</span></p>
+		  <h1 class="mb-0 bread">My Cart</h1>
+		</div>
+	  </div>
+	</div>
+  </div>
+{% if not cart_items %}
+<!--messages-->
+
+<h2 class="text-center">Your Shopping Cart Is Empty!</h2><br>
+<div class="text-center">
+  <a href= {% url 'store' %} class="btn btn-black py-3 px-5 mb-5">Continue Shopping...</a>
+</div>
+
+{% else %}
+    <section class="ftco-section ftco-cart d-flex justify-content-center">
+		
+			<div class="container">
+				<div class="row">
+    			<div style="margin: left 5rem;" class="col-md-12 ftco-animate ">
+    				<div class="cart-list">
+	    				<table class="table">
+						    <thead class="thead-primary">
+						      <tr class="text-center">
+						        <th>&nbsp;</th>
+						        <th>&nbsp;</th>
+						        <th>Product</th>
+						        <th>Price</th>
+						        <th>Quantity</th>
+						        <th>Total</th>
+						      </tr>
+						    </thead>
+                            {% for cart_item in cart_items  %}
+						    <tbody>
+						      <tr class="text-center">
+						        <td class="product-remove"><a href="{% url 'remove_cart_item' cart_item.product.id cart_item.id %}"  onclick="return confirm('Are you sure you want to delete this item?')"><span class="fas fa-close"></span></a></td>
+						        
+						        <td class="image-prod"><div class="img" style="background-image:url('/media/{{ cart_item.variant.variant_image }}')" height="70" width="90"></div></td>
+						        
+						        <td class="product-name">
+						        	<h3><a href="{% url 'product_details' cart_item.product.id %}">{{ cart_item.product.product_name}}</a></h3>
+									<p class="text-muted-small">
+										{% if cart_item.variations.all %}
+											{% for item in cart_item.variations.all %}
+												{{ item.variation_category | capfirst }} : {{ item.variation_value | capfirst }}
+											{% endfor %}
+										{% endif %}
+									</p>
+						        	<p>{{ cart_item.product.description }}</p>
+						        </td>
+						        
+						        <td class="price">₹{{ cart_item.product.product_price }}</td>
+						        
+						        <td class="quantity text-center">
+									{% if cart_item.variant.variant_stock == 0 %}
+										<p>out of stock</p>
+									{% else %}
+									{% comment %} <p>{{cart_item.id}}...{{cart_item.quantity}}</p> {% endcomment %}
+
+
+									<div class="input-group text-center mb-3" style="width: 150px;">
+										<a onclick="updateQuantity('{{ cart_item.id }}', -1)" class="input-group-text btn btn-primary decrement-btn mx-2" style="display: flex; align-items: center; justify-content: center; width: 25px; height: 53px;">-</a>
+										<input type="text" name="quantity" class="form-control text-center" id="{{cart_item.id}}" value="{{ cart_item.quantity }}" onchange="validateQuantity(this)">
+										<a onclick="updateQuantity('{{ cart_item.id }}', 1)" class="input-group-text btn btn-primary increment-btn mx-2" style="display: flex; align-items: center; justify-content: center; width: 25px; height: 53px;">+</a>
+									</div>
+									
+						
+									
+									
+
+								{% endif %} 
+								
+					            </td>
+						        
+						        
+								<td class="{{cart_item.id}}">
+									 ₹{{ cart_item.cart_price  }} 
+
+								  </td>
+						      </tr><!-- END TR-->
+
+							  
+						    </tbody>
+							{% endfor %}
+						  </table>
+							<div class="align-item-center text-right">
+								<a href="{% url 'store' %}" class="btn btn-black py-3 px-5 mb-5">Continue Shopping...</a>
+							</div>
+					</div>
+    			</div>
+			</div>
+    		</div>
+    		<div class="row justify-content-left " style="padding-right: 3rem; padding-left: 0%;">
+    			
+    				<div class="cart-total mb-3" style="width: 20rem; margin: right 5rem;">
+    					<h3>Cart Totals</h3>
+    					<p class="d-flex">
+    						<span>Subtotal</span>
+    						<span class="total">₹{{total}}</span>
+    					</p>
+    					<p class="d-flex">
+    						<span>Delivery Charge</span>
+    						<span>₹0.00</span>
+    					</p>
+						<p class="d-flex">
+    						<span>Tax</span>
+    						<span class="tax">₹{{tax}}</span>
+						 
+    					</p>
+    				
+    					<hr>
+    					<p class="d-flex total-price">
+    						<span>Total</span>
+    						<span class="grand_total">₹{{grand_total}}</span>
+    					</p>
+					
+
+						{% if grand_total == 0 %}
+							<p style="color: #df9595">Out Of Stock, Add Items for Continue Shopping...</p>
+						{% else %}
+							<p class="text-center"><a href="{% url 'checkout' %}" class="btn btn-primary py-3 px-4">Proceed to Checkout</a></p>
+						{% endif %}
+
+												
+    				</div>
+    				
+    			</div>
+    		</div>
+			</div>
+		
+		</section>
+{% endif %}	
+
+
+    
+  
+
+  <!-- loader -->
+  {% comment %} <div id="ftco-loader" class="show fullscreen"><svg class="circular" width="48px" height="48px"><circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#eeeeee"/><circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10" stroke="#F96D00"/></svg></div> {% endcomment %}
+  {% comment %} <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script> {% endcomment %}
+
+
+  <script src="js/jquery.min.js"></script>
+  <script src="js/jquery-migrate-3.0.1.min.js"></script>
+  <script src="js/popper.min.js"></script>
+  <script src="js/bootstrap.min.js"></script>
+  <script src="js/jquery.easing.1.3.js"></script>
+  <script src="js/jquery.waypoints.min.js"></script>
+  <script src="js/jquery.stellar.min.js"></script>
+  <script src="js/owl.carousel.min.js"></script>
+  <script src="js/jquery.magnific-popup.min.js"></script>
+  <script src="js/aos.js"></script>
+  <script src="js/jquery.animateNumber.min.js"></script>
+  <script src="js/bootstrap-datepicker.js"></script>
+  <script src="js/scrollax.min.js"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVWaKrjvy3MaE7SQ74_uJiULgl1JY0H2s&sensor=false"></script>
+  <script src="js/google-map.js"></script>
+  <script src="js/main.js"></script>
+
+{% csrf_token %}
+<script>
+    function updateQuantity(itemId, change) {
+        console.log(itemId, "kittyyyyyyyyyyyyyyyyy")
+        var csrfToken = $("input[name='csrfmiddlewaretoken']").val(); // Get the CSRF token from the input field
+
+        $.ajax({
+            type: "POST",
+            url: "update_quantity", // Replace with your backend endpoint to update quantity
+            data: {
+                csrfmiddlewaretoken: csrfToken, // Include the CSRF token in the data
+                item_id: itemId,
+                change: change
+            },
+            success: function (response) {
+                // Assuming the response contains the updated quantity value
+				var updatedPrice = response.updated_price;
+                var updatedQuantity = response.updated_quantity;
+				var tax = response.tax;
+				var grand_total = response.grand_total;
+                $(`#${itemId}`).val(updatedQuantity); // Update the input field value
+				//$(".qty-text").val(updatedQuantity); // Update the input field value 
+
+				$(`.${itemId}`).html("₹" + updatedPrice); // Update the total price
+				$(".tax").html("₹" + tax);
+				$(".grand_total").html("₹" + grand_total);
+				console.log(updatedQuantity,"quantity")
+				console.log(tax,"taxxxxxxxxxx")
+				console.log(updatedPrice,"updatedddddddddddddd")
+				console.log(grand_total,"grand_totalllllllll")
+            },
+            error: function () {
+                console.log("Error updating quantity.");
+            }
+        });
+    }
+</script> 
+
+<script>
+	$(document).ready(function() {
+		console.log("decrementttttttttttttttttt")
+		$('.decrement-btn').click(function() {
+			var input = $(this).parent().next('input[type="text"]');
+			var value = parseInt(input.val());
+			if (value > 1) {
+				input.val(value - 1);
+			}
+		});
+
+		$('.increment-btn').click(function() {
+			console.log("incrementttttttttttttt")
+
+			var input = $(this).parent().prev('input[type="text"]');
+			var value = parseInt(input.val());
+			var max = parseInt(input.attr('max'));
+			if (value < max) {
+				input.val(value + 1);
+			}
+		});
+	});
+
+</script>
+
+
+{% endblock body %}
